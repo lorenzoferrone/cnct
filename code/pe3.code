@@ -1,0 +1,9 @@
+def multiple: % 0 =
+#
+# def prime?:
+#     :: n
+#     sqrt
+#     range
+#     [switch n multiple] map
+
+25 :: n n sqrt range [n multiple] map

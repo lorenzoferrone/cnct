@@ -1,0 +1,25 @@
+# def fibn:
+#     :: n
+#     0 1
+#     [2 dupn +]
+#     n loop
+
+def all_:
+    :: n
+    all n group
+
+def enumerate:
+    # voglio introdurre la sintassi ::: che salva una variabile senza popparla
+    :: list list len range list zip
+
+def multiple:
+    % 0 =
+
+def pe1:
+    1000 range
+    [
+        [3 multiple] [5 multiple] both pair any
+    ] filter
+    [+] reduce
+
+pe1
