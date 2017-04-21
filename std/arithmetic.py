@@ -57,3 +57,7 @@ def le(a, b): return b < a
 @addToEnv('>')
 @stackify
 def ge(a, b): return b > a
+
+@addToEnv('not')
+@stackify
+def n(a): return not a

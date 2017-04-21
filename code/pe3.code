@@ -1,9 +1,16 @@
 def multiple: % 0 =
-#
-# def prime?:
-#     :: n
-#     sqrt
-#     range
-#     [switch n multiple] map
 
-25 :: n n sqrt range [n multiple] map
+def divisor: switch multiple
+
+#
+def prime?:
+    :: n
+    sqrt
+    range
+    [2 +] map
+    [n divisor] map
+    any not
+
+# 13 :: n sqrt range [2 + ] map [n divisor] map any
+
+5 prime?

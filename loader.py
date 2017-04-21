@@ -24,7 +24,7 @@ def execute(tokens, stack=None):
 
         if token.head == 'assign_stmt':
             name = token.tail[0].tail[0]
-            value = stack.pop()
+            value = stack[-1]
             env[name] = value
             # def _(stack_, value=value):
             #     return execute([value], stack_)
