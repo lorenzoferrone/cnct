@@ -1,0 +1,36 @@
+def divisor: 
+    switch % 0 =
+
+
+def isPrime n: 
+    [
+        2 n sqrt interval
+        [n divisor] dountil
+        any ! 
+    ]
+    [True]
+    n 2 = if
+
+# X Y -> X Y X
+def dupover: 2 take
+
+
+def intervals: dupover - range switch [+] curry map 
+
+
+# prende una funzione (di due argomenti) e un elemento e ritorna la funzione che
+# prende un argomento in meno
+# ex: 10 [+] curry è la funzione che prende un altro input e gli aggiunge 10
+def curry f n: [n f]
+
+
+def primorial: primesUpToN [*] reduce
+
+
+def primesUpToN n: 2 n interval [isPrime] filter
+
+
+
+# MAIN
+
+10 20 dupover

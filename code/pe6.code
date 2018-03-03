@@ -1,0 +1,8 @@
+def ++: [+] reduce
+def square: dup *
+
+def sumOfSquares: [square] map ++
+
+def squareOfSum: ++ square
+
+1 10 interval [sumOfSquares] [squareOfSum] both -

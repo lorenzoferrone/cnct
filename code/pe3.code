@@ -2,15 +2,60 @@ def multiple: % 0 =
 
 def divisor: switch multiple
 
-#
+# pattern per salvare il top dello stack nella variabile "_" da poter riutilizzare
+# l'env è ancora globale... quindi "_" viene ridefinito in ogni funzione...
+def @: >-> _
+
+
 def prime?:
-    :: n
-    sqrt
-    range
-    [2 +] map
-    [n divisor] map
+    @
+    2 _ sqrt interval
+    [_ divisor] dountil
     any not
 
-# 13 :: n sqrt range [2 + ] map [n divisor] map any
+# versione se fossero implementati i parametri
+def isPrime n:
+    2 n sqrt interval
+    [n divisor] dountil
+    any not
 
-5 prime?
+
+
+def factorize:
+    @
+    2 _ sqrt 1 + interval reverse unroll _
+    [-> (b a)
+        divisor
+        [b, a b / int, b >=> result]
+        [a] if
+    ]
+    [
+        [1 = not] [lengthAll 1 = not] both and
+    ] until
+    result
+
+# 600851475143 factorize
+
+def ffactorize:
+    @ 2 _ sqrt 1 + interval
+    [-> top
+        [_ divisor]
+        [_ switch / int, top >=> result, ffactorize False] bif
+    ] dountil
+    result last
+
+def multipleButNotEqual: [% 0 =] [= not] both and
+
+def empty: len 0 =
+
+def sieve n:
+    2 n interval
+    [
+        0 remove => result >-> c
+        [c multiple !] filter
+    ]
+    [empty !] until
+    result
+
+
+1000000 sieve [+] reduce

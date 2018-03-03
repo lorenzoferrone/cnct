@@ -18,3 +18,14 @@ def until(stack):
         stack_ = stack.copy()
 
     return stack[:-1]
+
+@addToEnv('if')
+def if_(stack):
+    # se il top dello stack è true fai una cosa, senno un altra
+    boolean, ifTrue, ifFalse = popn(stack, 3)
+    if boolean:
+        stack = ifTrue(stack)
+    else:
+        stack = ifFalse(stack)
+
+    return stack

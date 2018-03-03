@@ -25,6 +25,21 @@ def map_(stack):
 
     return stack
 
+@addToEnv('dountil')
+def dountil(stack):
+    f, l = popn(stack, 2)
+    L = []
+    for x in l:
+        y = f([x])
+        # y è uno stack (una lista), il cui ultimo elemento deve essere un bool
+        boolean = y.pop()
+        L.append(boolean)
+        if boolean:
+            break
+    stack.append(L)
+
+    return stack
+
 
 @addToEnv('filter')
 def filter_(stack):

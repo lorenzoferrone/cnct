@@ -2,6 +2,7 @@ from parser import Parser
 from transformer import Transformer
 from std import env
 import sys
+from plyplus.strees import STree
 
 
 def loadFile(path):
@@ -13,8 +14,10 @@ def loadFile(path):
 def loadModule(name):
     pass
 
-def execute(tokens, stack=None):
+def execute(tokens, stack=None, currentEnv=env):
     if stack is None: stack = []
+
+    # if currentEnv is None: currentEnv = env
 
     for token in tokens:
 
@@ -23,19 +26,55 @@ def execute(tokens, stack=None):
             loadModule(name)
 
         if token.head == 'assign_stmt':
-            name = token.tail[0].tail[0]
-            value = stack[-1]
-            env[name] = value
-            # def _(stack_, value=value):
-            #     return execute([value], stack_)
+            type_ = token.tail[0].head
+            names = [x.tail[0] for x in token.tail[0].tail]
+            # print (names, type_, token.tail[0].tail)
+            if type_ == 'assign_normal':
+                values = stack[-len(names):]
+                # print (values)
+                for name, value in zip(names, values):
+                    env[name] = value
+            if type_ == 'assign_drop':
 
-            # env[name] = _
+                for name in reversed(names):
+                    value = stack.pop()
+                    env[name] = value
+
+            if type_ == 'assign_acc':
+                # per il momento gli acc non possono avere liste come target
+                value = stack[-1]
+                try:
+                    env[names[0]].append(value)
+                except:
+                    env[names[0]] = [value]
+
+            if type_ == 'assign_acc_drop':
+                # per il momento gli acc non possono avere liste come target
+                value = stack.pop()
+                try:
+                    env[names[0]].append(value)
+                except:
+                    env[names[0]] = [value]
 
         if token.head == 'definition':
             name = token.tail[0].tail[0]
+
+            # assign_stmt(assign_drop(name('f')))
             def _(stack_, token=token):
-                body = token.tail[1]
-                return execute(token.tail[1], stack_)
+                if type(token.tail[1]) != list:
+                    params = token.tail[1]
+                    for par in [par.tail[0] for par in params.tail]:
+                        value = stack_.pop()
+                        env[par] = value
+                
+                    
+                    return execute(token.tail[2], stack_)
+                else:
+                    return execute(token.tail[1], stack_)
+
+
+
+                
 
             env[name] = _
 
@@ -84,6 +123,7 @@ def executeFromString(code, grammarFile):
     parser = Parser(grammarFile)
     ast = parser(code)
     print (ast)
+    print ('\n\n\n')
 
     # seconda parte, piccole ulteriori modifiche
     trans = Transformer()

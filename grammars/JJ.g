@@ -5,18 +5,21 @@ start:         (NEWLINE | token)+                               ;
 @token:         definition | expr | import_stmt | assign_stmt                              ;
 
 // controllare sulla grammatica di python come è implementato
-definition:     DEF name COLON body                             ;
-body:           (NEWLINE INDENT (expr | assign_stmt | NEWLINE)+ DEDENT) | (expr | assign_stmt)+                              ;
+definition:     DEF name param* COLON body                             ;
+body:           (NEWLINE INDENT (expr | NEWLINE)+ DEDENT) | (expr)+                              ;
+param: name+;
 
 import_stmt:    IMPORT name (COMMA name)?                      ;
-assign_stmt:    COLON COLON name                               ;
-@expr:          atom | LPAR expr RPAR                          ;
+assign_stmt:    assign_normal | assign_drop | assign_acc  | assign_acc_drop                        ;
+assign_normal:  IMPLY (name | (LPAR name+ RPAR));
+assign_drop:    DROP_IMPLY (name | (LPAR name+ RPAR));
+assign_acc:     ACC name;
+assign_acc_drop:DROP_ACC name;
+@expr:          atom | assign_stmt | LPAR expr RPAR                          ;
 
-@atom:          name | number | string | list | array | bool                 ;
+@atom:          name | number | string | list | array | bool               ;
 bool:           TRUE | FALSE;
-TRUE:           'True';
-FALSE:          'False';
-name:           NAME | PUNT                                          ;
+name:           NAME | PUNT;
 @number:        int | float                                     ;
 
 int:            '[0-9]\d*'                                      ;
@@ -25,7 +28,7 @@ float:          '(\d+\.\d*|\.\d+)'                              ;
 //List
 list:           n_list | emptylist                              ;
 emptylist:      LSQB RSQB                                       ;
-@n_list:        LSQB (atom)+ RSQB                               ;
+@n_list:        LSQB (expr)+ RSQB                               ;
 
 // array
 array:          LPAR (atom)+ RPAR                                ;
@@ -55,7 +58,14 @@ PUNT:       '[' PLUS
             '|' SLASH
             '|' PERCENT
             '|' DOT
-            ']+'                 ;
+            '|' UNDERSCORE
+            ']+'
+(%unless
+    IMPLY:      '->'    ;
+    DROP_IMPLY:     '>->'    ;
+    ACC:        '=>';
+    DROP_ACC:   '>=>';
+)                ;
 
 STAR:       '\*'    ;
 SLASH:      '/'     ;
@@ -81,8 +91,8 @@ LPAR:       '\('    ;
 RPAR:       '\)'    ;
 SEMI:       '\;'    ;
 AT:         '@'     ;
-IMPLY:      '->'    ;
 PERCENT:    '\%'    ;
+UNDERSCORE: '_'     ;
 
 
 
@@ -91,7 +101,7 @@ PERCENT:    '\%'    ;
 NEWLINE:
     '(\r?\n[\t ]*)+'    (%newline);
 WS:
-    '[\t \f]+'          (%ignore);
+    '[\t \f,]+'          (%ignore);
 LINE_CONT:
     '\\[\t \f]*\r?\n'   (%ignore) (%newline);
 COMMENT:
@@ -136,6 +146,9 @@ NOT:        'Not';
 IS:         'Is';
 IN:         'In';
 XOR:        'Xor';
+
+TRUE:           'True';
+FALSE:          'False';
 );
 
 

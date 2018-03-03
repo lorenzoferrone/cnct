@@ -1,0 +1,44 @@
+# le funzioni prendono parametri:
+# vengono poppati quel numero di elementi e salvati nelle variabili
+
+def isPrime n:
+    2 n sqrt interval
+    [n divisor] dountil
+    any not
+
+def isPrime: [sqrt 2 swap range] [multiple?] both any not
+
+def range2: 2 swap range
+
+def isPrime: [sqrt range2] [multiple?] both any not
+# -> var
+# poppa -.- e salva dentro var il top dello stack
+# => var
+# salva senza poppare -,-
+
+
+def empty: len 0 ==
+
+def sieve n:
+    2 n interval
+    [
+        0 remove => result --> c
+        [c multiple !] filter
+    ]
+    [empty !] until
+    result
+
+# le liste sono tra parentesi tonde separate da virgole
+
+def palindrome: str ([reverse], [id]) doAll unlist =
+def palindrome: str [reverse] [id] both equal?
+
+
+
+# funzioni anonime: normalmente semplicemente parentesi quadre
+
+[len 0 ==]
+
+# anonime con parametri:
+# def isPrime n:
+{n => 2 n sqrt interval [n divisor] dountil any not}

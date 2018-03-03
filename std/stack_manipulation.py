@@ -1,11 +1,26 @@
 from std.utility import popn
 from std import addToEnv, env
 from math import ceil
+from copy import deepcopy
 
+
+@addToEnv('last')
+def last(stack):
+    return [stack[-1]]
 
 @addToEnv('print')
 def print_(stack):
     print (stack)
+    return stack
+
+@addToEnv('printLast')
+def printLast(stack):
+    print (stack[-1])
+    return stack
+
+@addToEnv('drop')
+def drop(stack):
+    _ = stack.pop()
     return stack
 
 @addToEnv('id')
@@ -17,6 +32,14 @@ def range_(stack):
     x = stack.pop()
     x = int(ceil(x))
     stack.append(list(range(x)))
+    return stack
+
+@addToEnv('interval')
+def interval(stack):
+    x, y = popn(stack, 2)
+    x = int(ceil(x))
+    y = int(ceil(y))
+    stack.append(list(range(y, x + 1)))
     return stack
 
 @addToEnv('lengthAll')
@@ -79,12 +102,27 @@ def bi(stack):
 def bii(stack):
     # for function which return one output
     f, g = popn(stack, 2)
-    stack_ = stack.copy()
+    # aggiornare con deepcopy ovunque
+    stack_ = deepcopy(stack)
     stack = f(stack)
     stack_ = g(stack_)
+    # print ('ss', stack_)
 
     stack.append(stack_[-1])
     return stack
+
+@addToEnv('bif')
+def bif(stack):
+    # for function which return one output
+    stmt, cond = popn(stack, 2)
+    stack_ = stack.copy()
+    stack = cond(stack)
+    if stack[-1]:
+        stack = stmt(stack_)
+        return stack
+        # print ('stack_', stack_)
+    else:
+        return stack
 
 @addToEnv('.')
 def apply(stack):
@@ -99,11 +137,11 @@ def all(stack):
 
     # la prima funzione la faccio fuori dal ciclo
     f = funcList[0]
-    stack_ = stack.copy()   # copy of the original stack
+    stack_ = deepcopy(stack)   # copy of the original stack
     stack = f(stack)
     results = []
     for f in funcList[1:]:
-        stack__ = stack_.copy()
+        stack__ = deepcopy(stack_)
         stack__ = f(stack__)
         results.append(stack__[-1])
 
@@ -124,6 +162,20 @@ def group(stack):
     stack.append(list(reversed(values)))
     return stack
 
+@addToEnv('reverse')
+def reverse_(stack):
+    l = stack.pop()
+    # stack.append(l.reverse())
+    stack.append(l[::-1])
+    return stack
+
+@addToEnv('unroll')
+def unroll(stack):
+    l = stack.pop()
+    for x in l:
+        stack.append(x)
+    return stack
+
 @addToEnv('zip')
 def z(stack):
     l1, l2 = popn(stack, 2)
@@ -134,4 +186,18 @@ def z(stack):
 def any_(stack):
     l = stack.pop()
     stack.append(any(l))
+    return stack
+
+# @addToEnv('take')
+# def take(stack):
+#     n, l = popn(stack, 2)
+#     stack.append(l[n])
+#     return stack
+
+@addToEnv('remove')
+def remove(stack):
+    n, l = popn(stack, 2)
+    value = l.pop(n)
+    stack.append(l)
+    stack.append(value)
     return stack
