@@ -1,0 +1,55 @@
+# def filterLessThan10: [10 <=] filter
+# 
+# 
+# def divisor: switch % 0 =
+# 
+# def divisors n:
+#     1 n interval [n divisor] filter
+# 
+# def divisors2 n:
+#     1, n 1 -, interval [n divisor] filter
+# 
+# def divisors3 n:
+#     1 n interval [
+#         [n divisor] [n !=] bi and
+#     ] filter
+# 
+# def isperfect?: dup divisors2 [+] reduce =
+# 
+# # 2 1000 interval [isperfect?] filter
+# 
+# 
+# def intersection l1 l2: l1 [l2 in] filter 
+# 
+# # (1 2 3 7) (4 4 6 7) intersection
+# 
+# 
+# def last: reverse 0 @
+# 
+# # TODO: la grammatica non supporta i numeri negativi!!!
+# # idealmente sarebbe (-2 -1) @
+# def last2: reverse (0 2) @ reverse
+# 
+# def fibonacci n:
+#     (1 1) # starting numbers
+#     [dup last2 [+] reduce append] # prendi gli ultimi 2 elementi, sommali e appendeli alla lista
+#     n 2 - loop # ripeti per (n - 2) volte
+# 
+# 
+# # implements f(x, y, z) = x^2 + y^2 - |y|
+# # f(2, 3, 4) = 4 + 9 - 3 = 10
+# 
+# def square: dup *
+# 
+# def cube: dup square *
+# 
+# def func x y z:
+#     y [square] [id] bi - x square + 
+# 
+# def repeatElement n: [dup] n 1 - loop n group
+# 
+# def repeat: repeatElement concat
+# 
+# 2 3 4 5 [square] 3 repeat
+
+-6

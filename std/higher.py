@@ -1,9 +1,14 @@
 from std.utility import popn
 from std import addToEnv, env
+from copy import deepcopy
+
 
 @addToEnv('reduce')
 def reduce_(stack):
     f, l = popn(stack, 2)
+    if len(l) == 1:
+        stack.append(l[0])
+        return stack
     while l:
         l = f(l)
         if len(l) == 1:
@@ -13,9 +18,19 @@ def reduce_(stack):
     return stack
 
 
+@addToEnv('concat')
+def concat(stack):
+    l = stack.pop() # lista di funzioni
+    results = []
+    for func in l:
+        stack = func(stack)
+        results.append(stack.pop())
+    stack.extend(reversed(results))
+    return stack
+
+
 @addToEnv('map')
 def map_(stack):
-
     f, l = popn(stack, 2)
     L = []
     for x in l:
@@ -50,3 +65,14 @@ def filter_(stack):
             L.append(x)
     stack.append(L)
     return stack
+
+
+@addToEnv('.')
+def apply(stack):
+    f = stack.pop()
+    stack = f(stack)
+    return stack
+
+
+@addToEnv('id')
+def id(stack): return stack

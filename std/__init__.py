@@ -30,6 +30,9 @@ env = {}
 
 # dentro i moduli viene rimodificato, e poi lo reimporto
 from .arithmetic import env
+from .string import env
+from .logic import env
+from .iterator import env
 from .stack_manipulation import env
 from .higher import env
 from .flow import env

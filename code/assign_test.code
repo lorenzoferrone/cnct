@@ -1,12 +1,11 @@
-def divisor: 
-    switch % 0 =
+def divisor: switch % 0 =
 
 
 def isPrime n: 
     [
         2 n sqrt interval
         [n divisor] dountil
-        any ! 
+        any not
     ]
     [True]
     n 2 = if
@@ -24,13 +23,16 @@ def intervals: dupover - range switch [+] curry map
 def curry f n: [n f]
 
 
-def primorial: primesUpToN [*] reduce
+def primorial: 
+    primesUpToN [*] reduce
 
 
-def primesUpToN n: 2 n interval [isPrime] filter
+def primesUpToN n: 
+    2 n interval [isPrime] filter
+
+def pi_exact: primesUpToN len
 
 
+def pi_approximation: dup log /
 
 # MAIN
-
-10 20 dupover

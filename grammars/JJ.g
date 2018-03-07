@@ -9,21 +9,23 @@ definition:     DEF name param* COLON body                             ;
 body:           (NEWLINE INDENT (expr | NEWLINE)+ DEDENT) | (expr)+                              ;
 param: name+;
 
-import_stmt:    IMPORT name (COMMA name)?                      ;
+import_stmt:    IMPORT name (COMMA name)?                     ;
 assign_stmt:    assign_normal | assign_drop | assign_acc  | assign_acc_drop                        ;
 assign_normal:  IMPLY (name | (LPAR name+ RPAR));
 assign_drop:    DROP_IMPLY (name | (LPAR name+ RPAR));
 assign_acc:     ACC name;
 assign_acc_drop:DROP_ACC name;
-@expr:          atom | assign_stmt | LPAR expr RPAR                          ;
+@expr:          atom | assign_stmt                          ;
 
-@atom:          name | number | string | list | array | bool               ;
+@atom:          number | name | string | list | array | concat | bool               ;
 bool:           TRUE | FALSE;
-name:           NAME | PUNT;
 @number:        int | float                                     ;
+name:           NAME;
 
-int:            '[0-9]\d*'                                      ;
-float:          '(\d+\.\d*|\.\d+)'                              ;
+
+int:            '-[0-9]\d*'                                      ;
+float:          '-(\d+\.\d*|\.\d+)'                              ;
+
 
 //List
 list:           n_list | emptylist                              ;
@@ -32,6 +34,9 @@ emptylist:      LSQB RSQB                                       ;
 
 // array
 array:          LPAR (atom)+ RPAR                                ;
+
+// parallel_execution
+concat:         LBRACE (atom)+ RBRACE                           ;   
 
 string:         STRING  ;
 %fragment       STRING_INTERNAL: '.*?(?<!\\)(\\\\)*?' ;
@@ -59,12 +64,14 @@ PUNT:       '[' PLUS
             '|' PERCENT
             '|' DOT
             '|' UNDERSCORE
+            '|' SEMI
+            '|' EXP
             ']+'
 (%unless
     IMPLY:      '->'    ;
-    DROP_IMPLY:     '>->'    ;
-    ACC:        '=>';
-    DROP_ACC:   '>=>';
+    DROP_IMPLY: '>->'   ;
+    ACC:        '=>'    ;
+    DROP_ACC:   '>=>'   ;
 )                ;
 
 STAR:       '\*'    ;
@@ -72,7 +79,6 @@ SLASH:      '/'     ;
 PLUS:       '\+'    ;
 DBLPLUS:    '\+\+'  ;
 DBLSTAR:    '\*\*'  ;
-MINUS:      '\-'     ;
 EQUAL:      '='     ;
 COLON:      ':'     ;
 EXCL:       '!'     ;
@@ -83,10 +89,12 @@ GREATER:    '>'     ;
 LEQ:        '<='    ;
 GEQ:        '>='    ;
 LSQB:       '\['    ;
-RSQB:       '\]'     ;
+RSQB:       '\]'    ;
+LBRACE:     '\{'    ;
+RBRACE:     '\}'    ;
 COMMA:      ','     ;
 DOT:        '\.'    ;
-EXP:        '\^'     ;
+EXP:        '\^'    ;
 LPAR:       '\('    ;
 RPAR:       '\)'    ;
 SEMI:       '\;'    ;
@@ -113,7 +121,7 @@ COMMENT:
 
 
 // SECTION: VARIABLE NAMES AND KEYWORDS
-NAME:       '[A-Za-z][\w.\?]*(?!r?"|r?\')'// Match names and not strings (r"...")
+NAME:       '[A-Za-z][\w./\?]*(?!r?"|r?\')'// Match names and not strings (r"...")
 
 (%unless
 IMPORT:     'import';
@@ -121,6 +129,7 @@ PRINT:      'P';
 DEL:        'Del';
 AS:         'As';
 LAMBDA:     'Lambda';
+MINUS:      '\-'     ;
 LOOP:       'Loop';
 DO:         'Do';
 BY:         'By';

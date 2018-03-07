@@ -1,35 +1,8 @@
-def palindrome:
-    str ([reverse] [id]) doAll unlist =
+def palindrome: str [reverse] [id] bi =
 
+# list -> list ⨉ list
+def pairs: dup cross
 
+def prod: [*] reduce
 
-100 999 interval dup cross
-[ [*] reduce] map
-[palindrome] filter
-max
-
-
-# python -.- map
-
-map(func, list)
-
-l = []
-for i in list:
-    l.append(func(i))
-
-
-applyAll(funcList, element)
-
-l = []
-for func in funcList:
-    l.append(func(element))
-
-
-map( f => f(element), funcList)
-
-const apply = (f, element) => f(element)
-
-# se c'è il currying => apply(f) prende come input un element
-
-const element = 6
-map( f => f(element), funcList)
+1000 range pairs [prod] map, [palindrome] filter max

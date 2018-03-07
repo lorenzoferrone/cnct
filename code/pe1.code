@@ -1,6 +1,6 @@
 def multiple: % 0 =
 
-def even?: 2 multiple
+def even: 2 multiple
 
 def groupAll: lengthAll group
 
@@ -10,22 +10,15 @@ def pe1:
     1000 range
     [
         [3 multiple] [5 multiple] both pair any
-    ] filter
-    Sum
+    ] filter Sum
 
-# pe1
-
-
-######
-
-def fibn2:
-    :: n
+def fibn2 n:
     0 1
     [2 dupn +]
     [n <] until
     groupAll
-    [even?] filter
+    [even] filter
     Sum
 
-
-4000000 fibn2
+# MAIN
+pe1

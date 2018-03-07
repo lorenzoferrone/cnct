@@ -16,6 +16,7 @@ class Parser:
     def buildGrammar(self):
         return Grammar(self.grammar)
 
+
     def __call__(self, sentence):
         # parse either a string or an external file
         if isinstance(sentence, str):

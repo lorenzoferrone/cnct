@@ -1,6 +1,6 @@
-def ++: [+] reduce
+def sum: [+] reduce
 
-def istriplet?: [dup *] map reverse unroll + =
+def istriplet: [dup *] map reverse unroll + =
 
-1 100 interval 3 kfold
-[[istriplet?] [++ 100 = ] both and] filter
+1 10 interval 3 kfold
+[[istriplet] [sum 100 = ] both and] filter

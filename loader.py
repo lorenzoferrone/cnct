@@ -1,8 +1,7 @@
 from parser import Parser
 from transformer import Transformer
 from std import env
-import sys
-from plyplus.strees import STree
+import sys, os, time, pickle
 
 
 def loadFile(path):
@@ -11,19 +10,19 @@ def loadFile(path):
     return code
 
 
-def loadModule(name):
-    pass
+def loadModule(name, path, parser=None):
+    moduleFile = path + '/' + name
+    moduleCode = loadFile(moduleFile)
+    executeFromString(moduleCode, parser, main=False)
+    
 
-def execute(tokens, stack=None, currentEnv=env):
+def execute(tokens, stack=None, currentEnv=env, path=None, parser=None):
     if stack is None: stack = []
-
     # if currentEnv is None: currentEnv = env
-
     for token in tokens:
-
         if token.head == 'import_stmt':
-            name = token.tail[0].tail[0]
-            loadModule(name)
+            name = "".join(token.tail[0].tail)
+            loadModule(name, path, parser=parser)
 
         if token.head == 'assign_stmt':
             type_ = token.tail[0].head
@@ -59,23 +58,17 @@ def execute(tokens, stack=None, currentEnv=env):
         if token.head == 'definition':
             name = token.tail[0].tail[0]
 
-            # assign_stmt(assign_drop(name('f')))
             def _(stack_, token=token):
                 if type(token.tail[1]) != list:
                     params = token.tail[1]
-                    for par in [par.tail[0] for par in params.tail]:
+                    for par in reversed([par.tail[0] for par in params.tail]):
                         value = stack_.pop()
-                        env[par] = value
-                
-                    
+                        env[par] = value    
                     return execute(token.tail[2], stack_)
                 else:
                     return execute(token.tail[1], stack_)
 
-
-
-                
-
+            _.__name__ = name
             env[name] = _
 
         if token.head == 'int':
@@ -91,17 +84,19 @@ def execute(tokens, stack=None, currentEnv=env):
                 stack.append(False)
 
         if token.head == 'name':
-            # da aggiungere parsing per i nomi col punto (importo da moduli)
             try:
                 value = env[token.tail[0]]
-            except KeyError:
+            except KeyError as error:
                 print ('Error:', token.tail[0], 'is undefined')
-                sys.exit(0)
+                sys.exit(1)
+                
             try:
                 # va sistemato un po sto punto
                 stack = value(stack)
-            except TypeError:
+            except TypeError as error:
                 stack.append(value)
+            except UnboundLocalError as error:
+                pass
 
         if token.head == 'string':
             stack.append(token.tail[0][1:-1])
@@ -117,32 +112,42 @@ def execute(tokens, stack=None, currentEnv=env):
     return stack
 
 
-def executeFromString(code, grammarFile):
+def executeFromString(code, parser, path=os.getcwd(), main=True, stack=None):
     # parsing:
-    # prima parte
-    parser = Parser(grammarFile)
     ast = parser(code)
-    print (ast)
-    print ('\n\n\n')
-
     # seconda parte, piccole ulteriori modifiche
     trans = Transformer()
     ast = trans(ast)
-    # print ('secondasd', ast)
-
+    print (ast)
     # esecuzione dello stack
-    stack = execute(ast)
+    stack = execute(ast, path=path, stack=stack, parser=parser)
+    
+    if main:
+        print (stack)
+    
+    return stack
 
-    print ('\nfinal stack:')
-    print (stack)
 
-
+    
 
 if __name__ == "__main__":
 
+    start = time.time()
     grammarFile = 'grammars/JJ.g'
-
+    parser = Parser(grammarFile)
+    print ('loading time:', round(time.time() - start, 2), 's')
+    
+    # f = open('grammars/compiledGrammar.g', 'wb')
+    # pickle.dump(parser.builtGrammar, f, 2)
+    # f.close()
+    # 
+    # f = open('grammars/compiledGrammar.g', 'rb')
+    # pickle.load(f)
+    # 
+    
     programFile, *args = sys.argv[1:]
+    path = programFile.split('/')[-2]
+    
     # carico il codice da file, se uso il flag -x invece
     # leggo da riga di comando
     if programFile != '-x':
@@ -150,4 +155,4 @@ if __name__ == "__main__":
     else:
         code = args[0]
 
-    executeFromString(code, grammarFile)
+    executeFromString(code, parser, path=path, main=True)
