@@ -39,9 +39,9 @@
 # # implements f(x, y, z) = x^2 + y^2 - |y|
 # # f(2, 3, 4) = 4 + 9 - 3 = 10
 # 
-# def square: dup *
+def square: dup *
 # 
-# def cube: dup square *
+def cube: dup square *
 # 
 # def func x y z:
 #     y [square] [id] bi - x square + 
@@ -50,6 +50,14 @@
 # 
 # def repeat: repeatElement concat
 # 
-# 2 3 4 5 [square] 3 repeat
+# 
 
--6
+# [2, 2, 3, 3, list(name('square')), list(name('cube')), <function concat at 0x1026cf950>]
+
+
+-2 9 {
+    [square 1 +]
+    [cube 3 *]
+}
+
+

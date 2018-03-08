@@ -19,13 +19,11 @@ assign_acc_drop:DROP_ACC name;
 
 @atom:          number | name | string | list | array | concat | bool               ;
 bool:           TRUE | FALSE;
-@number:        int | float                                     ;
-name:           NAME;
+@number:        int | float                                ;
+name:           NAME | PUNT;
 
-
-int:            '-[0-9]\d*'                                      ;
-float:          '-(\d+\.\d*|\.\d+)'                              ;
-
+int:            '\-?[0-9]\d*'                                      ;
+float:          '\-?(\d+\.\d*|\.\d+)'                              ;
 
 //List
 list:           n_list | emptylist                              ;
@@ -36,7 +34,8 @@ emptylist:      LSQB RSQB                                       ;
 array:          LPAR (atom)+ RPAR                                ;
 
 // parallel_execution
-concat:         LBRACE (atom)+ RBRACE                           ;   
+concat:         LBRACE atom+ RBRACE                           ;
+// atoms:          atom+;
 
 string:         STRING  ;
 %fragment       STRING_INTERNAL: '.*?(?<!\\)(\\\\)*?' ;
@@ -48,9 +47,7 @@ STRING :    '(' DBLQUOTE '(?!"")' STRING_INTERNAL DBLQUOTE
             ')' ;
 
 
-// SECTION: punctuation and math symbols
-// @punt:       '[\+\-]+'                          ;
-// @punt:       (PLUS | MINUS)+                        ;
+
 
 PUNT:       '[' PLUS
             '|' MINUS
@@ -64,15 +61,14 @@ PUNT:       '[' PLUS
             '|' PERCENT
             '|' DOT
             '|' UNDERSCORE
-            '|' SEMI
             '|' EXP
             ']+'
 (%unless
-    IMPLY:      '->'    ;
-    DROP_IMPLY: '>->'   ;
-    ACC:        '=>'    ;
-    DROP_ACC:   '>=>'   ;
-)                ;
+    IMPLY:      '->'        ;
+    DROP_IMPLY: '>->'       ;
+    ACC:        '=>'        ;
+    DROP_ACC:   '>=>'       ;
+)                           ;
 
 STAR:       '\*'    ;
 SLASH:      '/'     ;
@@ -101,6 +97,7 @@ SEMI:       '\;'    ;
 AT:         '@'     ;
 PERCENT:    '\%'    ;
 UNDERSCORE: '_'     ;
+MINUS:      '\-'    ;
 
 
 
@@ -118,48 +115,15 @@ COMMENT:
 
 
 
-
-
 // SECTION: VARIABLE NAMES AND KEYWORDS
-NAME:       '[A-Za-z][\w./\?]*(?!r?"|r?\')'// Match names and not strings (r"...")
+NAME:       '[A-Za-z][\w.\?]*(?!r?"|r?\')'// Match names and not strings (r"...")
 
 (%unless
-IMPORT:     'import';
-PRINT:      'P';
-DEL:        'Del';
-AS:         'As';
-LAMBDA:     'Lambda';
-MINUS:      '\-'     ;
-LOOP:       'Loop';
-DO:         'Do';
-BY:         'By';
-CASE:       'K';
-// Definitions
-DEF:        'def';
-
-// Flow Blocks
-IF:         '\?';
-FOR:        'For';
-WHILE:      'While';
-
-// Flow
-BREAK:      'Break';
-CONTINUE:   'Continue';
-RETURN:     'Return';
-YIELD:      'Yield';
-
-// Operators
-AND:        'And';
-OR:         'Or';
-NOT:        'Not';
-IS:         'Is';
-IN:         'In';
-XOR:        'Xor';
-
-TRUE:           'True';
-FALSE:          'False';
+IMPORT:     'import'    ;
+DEF:        'def'       ;
+TRUE:       'True'      ;
+FALSE:      'False'     ;
 );
-
 
 
 // INDENTING AND DEDENTING

@@ -2,6 +2,8 @@ from parser import Parser
 from transformer import Transformer
 from std import env
 import sys, os, time, pickle
+import re
+from copy import deepcopy
 
 
 def loadFile(path):
@@ -10,11 +12,22 @@ def loadFile(path):
     return code
 
 
+def preprocessCode(code):
+    '''serve per trattare i numeri negativi, non trovo altro modo -,-'''
+    r = re.compile(r"-([\d]+)")
+    return re.sub(r, '0 \\1 -', code, 0)
+
+
 def loadModule(name, path, parser=None):
     moduleFile = path + '/' + name
     moduleCode = loadFile(moduleFile)
     executeFromString(moduleCode, parser, main=False)
-    
+
+def parse_list(token):
+    def _(stack_, token=token):
+        return execute(token.tail, stack_)
+    return _
+
 
 def execute(tokens, stack=None, currentEnv=env, path=None, parser=None):
     if stack is None: stack = []
@@ -102,12 +115,19 @@ def execute(tokens, stack=None, currentEnv=env, path=None, parser=None):
             stack.append(token.tail[0][1:-1])
 
         if token.head == 'list':
-            def _(stack_, token=token):
-                return execute(token.tail, stack_)
-            stack.append(_)
+            # def _(stack_, token=token):
+            #     return execute(token.tail, stack_)
+            stack.append(parse_list(token))
 
         if token.head == 'array':
             stack.append(execute(token.tail, []))
+        
+        if token.head == 'concat':
+            res = []
+            for func in token.tail:
+                stack = parse_list(func)(stack)
+                res.append(stack.pop())
+            stack.extend(res)
 
     return stack
 
@@ -152,7 +172,9 @@ if __name__ == "__main__":
     # leggo da riga di comando
     if programFile != '-x':
         code = loadFile(programFile)
+        code = preprocessCode(code)
     else:
         code = args[0]
+        code = preprocessCode(code)
 
     executeFromString(code, parser, path=path, main=True)
