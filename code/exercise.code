@@ -46,18 +46,13 @@ def cube: dup square *
 # def func x y z:
 #     y [square] [id] bi - x square + 
 # 
-# def repeatElement n: [dup] n 1 - loop n group
+def repeatElement n: [dup] n 1 - loop n group
 # 
-# def repeat: repeatElement concat
+def repeat: repeatElement concat
 # 
 # 
+ 
 
-# [2, 2, 3, 3, list(name('square')), list(name('cube')), <function concat at 0x1026cf950>]
-
-
--2 9 {
-    [square 1 +]
-    [cube 3 *]
-}
+-2 9 {[square dup] [square dup]}
 
 

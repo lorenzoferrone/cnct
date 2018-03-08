@@ -4,6 +4,7 @@ from std import env
 import sys, os, time, pickle
 import re
 from copy import deepcopy
+from std.utility import popn
 
 
 def loadFile(path):
@@ -22,6 +23,7 @@ def loadModule(name, path, parser=None):
     moduleFile = path + '/' + name
     moduleCode = loadFile(moduleFile)
     executeFromString(moduleCode, parser, main=False)
+
 
 def parse_list(token):
     def _(stack_, token=token):
@@ -125,8 +127,17 @@ def execute(tokens, stack=None, currentEnv=env, path=None, parser=None):
         if token.head == 'concat':
             res = []
             for func in token.tail:
+                l_old = len(stack)
                 stack = parse_list(func)(stack)
-                res.append(stack.pop())
+                l_new = len(stack)
+                # non posso poppare un solo elemento, devo poppare tutti quelli nuovo calcolati
+                # può capitare anche che lo stack sia più corto di prima!
+                # devo trovare un modo per far capire quanti sono i valori tornati da func
+                arity = ...
+                if arity == 1:
+                    res.append(stack.pop())
+                else:
+                    res.extend(popn(stack, arity))
             stack.extend(res)
 
     return stack
